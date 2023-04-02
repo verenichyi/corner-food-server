@@ -1,7 +1,8 @@
 import { Types } from 'mongoose';
 
-export class UserPayloadEntity {
+export class GoogleUserEntity {
   _id: Types.ObjectId;
   username: string;
   email: string;
+  profileImage: string;
 }

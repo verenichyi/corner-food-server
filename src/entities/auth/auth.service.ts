@@ -6,7 +6,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UserEntity } from '../users/user.entity';
 import authExceptions from './constants/exceptions';
-import { UserPayloadEntity } from '../users/user-payload.entity';
+import { GoogleUserDto } from './dto/google-user.dto';
 
 const { Unauthorized } = authExceptions;
 
@@ -17,6 +17,20 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  async authGoogle(userDto: GoogleUserDto) {
+    const user = await this.usersService.getUserByEmail(userDto.email);
+    if (user) {
+      const { _id, email, username, profileImage } = user;
+      const payload = { _id, email, username, profileImage };
+      return this.generateToken(payload);
+    }
+
+    const newUser = await this.usersService.createGoogleUser(userDto);
+    const { _id, email, username, profileImage } = newUser;
+    const payload = { _id, email, username, profileImage };
+    return this.generateToken(payload);
+  }
+
   async login(loginDto: LoginUserDto) {
     const user = await this.validateUser(loginDto);
     const { _id, email, username } = user;
@@ -26,14 +40,12 @@ export class AuthService {
 
   async registration(registerDto: RegisterUserDto) {
     const user = await this.usersService.createUser(registerDto);
-
     const { _id, email, username } = user;
-    const payload = { _id, email, username};
-
+    const payload = { _id, email, username };
     return this.generateToken(payload);
   }
 
-  private async generateToken(payload: UserPayloadEntity) {
+  async generateToken(payload) {
     return {
       token: this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET_KEY,
@@ -43,11 +55,11 @@ export class AuthService {
     };
   }
 
-  async checkAuth(user: UserPayloadEntity) {
+  async checkAuth(user) {
     return await this.generateToken(user);
   }
 
-  private async validateUser(userDto: LoginUserDto): Promise<UserEntity> {
+  async validateUser(userDto: LoginUserDto): Promise<UserEntity> {
     const user = await this.usersService.getUserByEmail(userDto.email);
 
     if (!user) {

@@ -7,10 +7,13 @@ export class User {
   username: string;
 
   @Prop({ type: String, required: true })
+  email: string;
+
+  @Prop({ type: String })
   password: string;
 
-  @Prop({ type: String, required: true })
-  email: string;
+  @Prop({ type: String})
+  profileImage: string;
 }
 
 export type UserDocument = HydratedDocument<User>;
