@@ -7,17 +7,37 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { OAuth2Client } from 'google-auth-library';
+import { StatusCodes } from 'http-status-codes';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { StatusCodes } from 'http-status-codes';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
-import { GoogleAuthGuard } from '../../guards/google-auth.guard';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+
+const client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+);
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @Post('/google')
+  async loginWithGoogle(@Body('token') token): Promise<any> {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const {
+      email,
+      name: username,
+      picture: profileImage,
+    } = ticket.getPayload();
+    return await this.authService.authGoogle({ email, username, profileImage });
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('/check')
@@ -30,16 +50,6 @@ export class AuthController {
   @Post('/login')
   async login(@Body() loginDto: LoginUserDto) {
     return await this.authService.login(loginDto);
-  }
-
-  @UseGuards(GoogleAuthGuard)
-  @Get('/login/google')
-  async loginWithGoogle() {}
-
-  @UseGuards(GoogleAuthGuard)
-  @Get('/login/google/callback')
-  async loginWithGoogleRedirectCallback(@Req() request) {
-    return await this.authService.authGoogle(request.user);
   }
 
   @HttpCode(StatusCodes.CREATED)

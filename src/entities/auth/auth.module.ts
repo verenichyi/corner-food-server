@@ -6,11 +6,10 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from '../../passport-strategies/jwt.strategy';
 import { LocalStrategy } from '../../passport-strategies/local.strategy';
-import { GoogleStrategy } from '../../passport-strategies/google.strategy';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, JwtService, LocalStrategy, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, JwtService, LocalStrategy, JwtStrategy],
   imports: [
     forwardRef(() => UsersModule),
     PassportModule,
