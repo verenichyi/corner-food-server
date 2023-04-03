@@ -13,6 +13,8 @@ import { UserEntity } from './user.entity';
 import { User, UserDocument } from './user.schema';
 import { RegisterUserDto } from '../auth/dto/register-user.dto';
 import exceptions from './constants/exceptions';
+import { GoogleUserDto } from '../auth/dto/google-user.dto';
+import { GoogleUserEntity } from './google-user.entity';
 
 const { NotFound } = exceptions;
 config();
@@ -36,9 +38,20 @@ export class UsersService {
     return user;
   }
 
+  async createGoogleUser(
+    body: GoogleUserDto,
+  ): Promise<GoogleUserEntity> {
+    await checkUserForDatabaseMatches(
+      body.email,
+      this.userModel,
+    );
+
+    const newUser = await new this.userModel(body);
+    return newUser.save();
+  }
+
   async createUser(body: CreateUserDto | RegisterUserDto): Promise<UserEntity> {
     await checkUserForDatabaseMatches(
-      body.username,
       body.email,
       this.userModel,
     );
@@ -71,7 +84,6 @@ export class UsersService {
     isIdValid(userId);
 
     await checkUserForDatabaseMatches(
-      updateUserDto.username,
       updateUserDto.email,
       this.userModel,
       userId,

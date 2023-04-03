@@ -12,28 +12,21 @@ export function isIdValid(id: string): void | never {
 }
 
 export async function checkUserForDatabaseMatches(
-  username: string,
   email: string,
   userModel: Model<UserDocument>,
   userId?: string,
 ): Promise<void | never> {
-  const userByName = await userModel.findOne({
-    username,
-  });
   const userByEmail = await userModel.findOne({ email });
 
   if (userId) {
-    if (
-      (userByName && userByName._id.toString() !== userId) ||
-      (userByEmail && userByEmail._id.toString() !== userId)
-    ) {
+    if (userByEmail && userByEmail._id.toString() !== userId) {
       throw new ConflictException(Conflict);
     }
 
     return;
   }
 
-  if (userByName || userByEmail) {
+  if (userByEmail) {
     throw new ConflictException(Conflict);
   }
 }
