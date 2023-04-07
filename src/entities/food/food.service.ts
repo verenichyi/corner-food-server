@@ -15,7 +15,6 @@ import { FilesService } from '../files/files.service';
 export class FoodService {
   constructor(
     @InjectModel(Food.name) private foodModel: Model<FoodDocument>,
-    private filesService: FilesService,
   ) {}
 
   async getAll(): Promise<FoodEntity[]> {
@@ -39,11 +38,9 @@ export class FoodService {
     image: Express.Multer.File,
     body: CreateFoodDto,
   ): Promise<FoodEntity> {
-    const fileName = await this.filesService.createFile(image);
-
     const newFood = await new this.foodModel({
       ...body,
-      image: fileName,
+      image: `data:${image.mimetype};base64,${image.buffer.toString('base64')}`,
     });
     return newFood.save();
   }
@@ -53,9 +50,18 @@ export class FoodService {
     image: Express.Multer.File,
     updateFoodDto: UpdateFoodDto,
   ): Promise<FoodEntity> {
-    const food = await this.foodModel.findByIdAndUpdate(id, updateFoodDto, {
-      new: true,
-    });
+    const food = await this.foodModel.findByIdAndUpdate(
+      id,
+      {
+        ...updateFoodDto,
+        image: `data:${image.mimetype};base64,${image.buffer.toString(
+          'base64',
+        )}`,
+      },
+      {
+        new: true,
+      },
+    );
 
     if (!food) {
       throw new NotFoundException();
@@ -68,12 +74,9 @@ export class FoodService {
       throw new BadRequestException();
     }
 
-    const food = await this.foodModel.findById(id);
+    const food = await this.foodModel.findByIdAndDelete(id);
     if (!food) {
       throw new NotFoundException();
     }
-
-    await this.filesService.deleteFile(food.image);
-    await this.foodModel.findByIdAndDelete(id);
   }
 }
