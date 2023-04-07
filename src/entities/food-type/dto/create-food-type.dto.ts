@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 export type FoodTypeType =
   | 'Fast Food'
@@ -8,8 +8,18 @@ export type FoodTypeType =
   | 'Salty'
   | 'Sour';
 
+export const validFoodTypes: FoodTypeType[] = [
+  'Fast Food',
+  'Vegetarian',
+  'Drink',
+  'Spicy',
+  'Salty',
+  'Sour',
+];
+
 export class CreateFoodTypeDto {
   @IsString()
   @IsNotEmpty()
-  value: FoodTypeType;
+  @IsIn(validFoodTypes)
+  value: string;
 }

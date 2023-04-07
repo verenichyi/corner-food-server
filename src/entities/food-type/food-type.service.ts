@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -20,11 +21,16 @@ export class FoodTypeService {
   }
 
   async createFoodType(body: CreateFoodTypeDto): Promise<FoodTypeEntity> {
-    const newUser = await new this.foodTypeModel({ ...body });
-    return newUser.save();
+    const foodType = await this.foodTypeModel.findOne({ value: body.value });
+    if (foodType) {
+      throw new ConflictException('This food type already exists');
+    }
+
+    const newFoodType = await new this.foodTypeModel({ ...body });
+    return newFoodType.save();
   }
 
-  async deleteFoodType(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException();
     }

@@ -29,6 +29,6 @@ export class FoodTypeController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
   async delete(@Param('id') id: string): Promise<void> {
-    return await this.foodTypeService.deleteFoodType(id);
+    return await this.foodTypeService.delete(id);
   }
 }
