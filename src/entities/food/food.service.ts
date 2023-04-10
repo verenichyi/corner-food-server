@@ -1,30 +1,22 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import { FoodEntity } from './food.entity';
 import { FoodDocument, Food } from './food.schema';
-import { FilesService } from '../files/files.service';
+import { validateId } from '../../utils/validateId';
 
 @Injectable()
 export class FoodService {
-  constructor(
-    @InjectModel(Food.name) private foodModel: Model<FoodDocument>,
-  ) {}
+  constructor(@InjectModel(Food.name) private foodModel: Model<FoodDocument>) {}
 
   async getAll(): Promise<FoodEntity[]> {
     return this.foodModel.find();
   }
 
   async findById(id: string): Promise<FoodEntity> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException();
-    }
+    validateId(id);
 
     const food = await this.foodModel.findById(id);
     if (!food) {
@@ -50,6 +42,8 @@ export class FoodService {
     image: Express.Multer.File,
     updateFoodDto: UpdateFoodDto,
   ): Promise<FoodEntity> {
+    validateId(id);
+
     const food = await this.foodModel.findByIdAndUpdate(
       id,
       {
@@ -70,9 +64,7 @@ export class FoodService {
   }
 
   async delete(id: string): Promise<void> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException();
-    }
+    validateId(id);
 
     const food = await this.foodModel.findByIdAndDelete(id);
     if (!food) {

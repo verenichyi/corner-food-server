@@ -12,7 +12,6 @@ import { FilesModule } from '../files/files.module';
   imports: [
     MongooseModule.forFeature([{ name: Food.name, schema: FoodSchema }]),
     forwardRef(() => AuthModule),
-    FilesModule
   ],
   exports: [FoodService],
 })

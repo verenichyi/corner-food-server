@@ -9,6 +9,7 @@ import { AuthModule } from './entities/auth/auth.module';
 import { FoodTypeModule } from './entities/food-type/food-type.module';
 import { FoodModule } from './entities/food/food.module';
 import { FilesModule } from './entities/files/files.module';
+import { FavoriteFoodModule } from './entities/favorite-food/favorite-food.module';
 
 dotenv.config();
 
@@ -26,7 +27,8 @@ dotenv.config();
     AuthModule,
     FoodTypeModule,
     FoodModule,
-    FilesModule
+    FilesModule,
+    FavoriteFoodModule,
   ],
 })
 export class AppModule {}

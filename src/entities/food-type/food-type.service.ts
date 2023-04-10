@@ -1,14 +1,14 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateFoodTypeDto } from './dto/create-food-type.dto';
 import { FoodTypeEntity } from './food-type.entity';
 import { FoodType, FoodTypeDocument } from './food-type.schema';
+import { validateId } from '../../utils/validateId';
 
 @Injectable()
 export class FoodTypeService {
@@ -31,9 +31,7 @@ export class FoodTypeService {
   }
 
   async delete(id: string): Promise<void> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException();
-    }
+    validateId(id);
 
     const deletedFoodType = await this.foodTypeModel.findByIdAndDelete(id);
     if (!deletedFoodType) {
