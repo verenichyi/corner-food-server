@@ -10,14 +10,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { FoodService } from './food.service';
 import { FoodEntity } from './food.entity';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('food')
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
