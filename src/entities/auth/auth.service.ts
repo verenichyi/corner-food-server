@@ -5,10 +5,7 @@ import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UserEntity } from '../users/user.entity';
-import authExceptions from './constants/exceptions';
 import { GoogleUserDto } from './dto/google-user.dto';
-
-const { Unauthorized } = authExceptions;
 
 @Injectable()
 export class AuthService {
@@ -55,15 +52,20 @@ export class AuthService {
     };
   }
 
-  async checkAuth(user) {
-    return await this.generateToken(user);
+  async checkAuth(payload) {
+    const user = await this.usersService.getUserByEmail(payload.email);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return await this.generateToken({ ...user });
   }
 
   async validateUser(userDto: LoginUserDto): Promise<UserEntity> {
     const user = await this.usersService.getUserByEmail(userDto.email);
 
     if (!user) {
-      throw new UnauthorizedException(Unauthorized);
+      throw new UnauthorizedException();
     }
 
     const isPasswordCorrect = await bcrypt.compare(
@@ -72,7 +74,7 @@ export class AuthService {
     );
 
     if (!isPasswordCorrect) {
-      throw new UnauthorizedException(Unauthorized);
+      throw new UnauthorizedException();
     }
 
     return user;

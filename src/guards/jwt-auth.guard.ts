@@ -4,9 +4,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import authExceptions from '../entities/auth/constants/exceptions';
-
-const { Unauthorized } = authExceptions;
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -16,7 +13,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   handleRequest(err, user) {
     if (err || !user) {
-      throw err || new UnauthorizedException(Unauthorized);
+      throw err || new UnauthorizedException();
     }
     return user;
   }

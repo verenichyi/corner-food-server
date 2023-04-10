@@ -3,20 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { config } from 'dotenv';
-import {
-  checkUserForDatabaseMatches,
-  isIdValid,
-} from 'src/entities/users/helpers/validation';
+import { checkUserForDatabaseMatches } from 'src/entities/users/utils/validation';
+import { validateId } from '../../utils/validateId';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './user.entity';
 import { User, UserDocument } from './user.schema';
 import { RegisterUserDto } from '../auth/dto/register-user.dto';
-import exceptions from './constants/exceptions';
 import { GoogleUserDto } from '../auth/dto/google-user.dto';
 import { GoogleUserEntity } from './google-user.entity';
 
-const { NotFound } = exceptions;
 config();
 
 @Injectable()
@@ -24,37 +20,29 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async getAll(): Promise<UserEntity[]> {
-    return await this.userModel.find();
+    return this.userModel.find().lean();
   }
 
   async findById(userId: string): Promise<UserEntity> {
-    isIdValid(userId);
+    validateId(userId);
 
-    const user = await this.userModel.findById(userId);
-
+    const user = await this.userModel.findById(userId).lean();
     if (!user) {
-      throw new NotFoundException(NotFound);
+      throw new NotFoundException();
     }
+
     return user;
   }
 
-  async createGoogleUser(
-    body: GoogleUserDto,
-  ): Promise<GoogleUserEntity> {
-    await checkUserForDatabaseMatches(
-      body.email,
-      this.userModel,
-    );
+  async createGoogleUser(body: GoogleUserDto): Promise<GoogleUserEntity> {
+    await checkUserForDatabaseMatches(body.email, this.userModel);
 
     const newUser = await new this.userModel(body);
     return newUser.save();
   }
 
   async createUser(body: CreateUserDto | RegisterUserDto): Promise<UserEntity> {
-    await checkUserForDatabaseMatches(
-      body.email,
-      this.userModel,
-    );
+    await checkUserForDatabaseMatches(body.email, this.userModel);
 
     const hashedPassword = await bcrypt.hash(
       body.password,
@@ -69,38 +57,34 @@ export class UsersService {
   }
 
   async deleteUser(userId: string): Promise<UserEntity> {
-    isIdValid(userId);
-    const deletedUser = await this.userModel.findByIdAndDelete(userId);
+    validateId(userId);
+
+    const deletedUser = await this.userModel.findByIdAndDelete(userId).lean();
     if (!deletedUser) {
-      throw new NotFoundException(NotFound);
+      throw new NotFoundException();
     }
+
     return deletedUser;
   }
 
   async updateUser(
-    userId: string,
+    id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
-    isIdValid(userId);
+    validateId(id);
+    await checkUserForDatabaseMatches(updateUserDto.email, this.userModel, id);
 
-    await checkUserForDatabaseMatches(
-      updateUserDto.email,
-      this.userModel,
-      userId,
-    );
-
-    const existingUser = await this.userModel.findByIdAndUpdate(
-      userId,
-      updateUserDto,
-      { new: true },
-    );
-    if (!existingUser) {
-      throw new NotFoundException(NotFound);
+    const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
+      new: true,
+    }).lean();
+    if (!user) {
+      throw new NotFoundException();
     }
-    return existingUser;
+
+    return user;
   }
 
   async getUserByEmail(email: string): Promise<UserEntity> {
-    return await this.userModel.findOne({ email });
+    return this.userModel.findOne({ email }).lean();
   }
 }
