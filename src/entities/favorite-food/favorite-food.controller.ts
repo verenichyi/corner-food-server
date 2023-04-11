@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { FavoriteFoodService } from './favorite-food.service';
@@ -16,6 +17,15 @@ import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 @Controller('favorite-food')
 export class FavoriteFoodController {
   constructor(private readonly favoriteFoodService: FavoriteFoodService) {}
+
+  @Get(':id/search')
+  async search(
+    @Param('id') id: string,
+    @Query('searchValue') searchValue: string,
+    @Query('foodType') foodType: string,
+  ): Promise<FavoriteFoodEntity[]> {
+    return await this.favoriteFoodService.search(id, searchValue, foodType);
+  }
 
   @Get()
   async getAll(): Promise<FavoriteFoodEntity[]> {

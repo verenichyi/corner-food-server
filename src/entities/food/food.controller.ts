@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -21,6 +22,14 @@ import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 @Controller('food')
 export class FoodController {
   constructor(private readonly foodService: FoodService) {}
+
+  @Get('search')
+  async search(
+    @Query('searchValue') searchValue: string,
+    @Query('foodType') foodType: string,
+  ): Promise<FoodEntity[]> {
+    return await this.foodService.search(searchValue, foodType);
+  }
 
   @Get()
   async getAll(): Promise<FoodEntity[]> {
