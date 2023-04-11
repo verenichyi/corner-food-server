@@ -24,7 +24,6 @@ export class FavoriteFoodController {
     @Query('searchValue') searchValue: string,
     @Query('foodType') foodType: string,
   ): Promise<FavoriteFoodEntity[]> {
-    console.log({ id }, { searchValue }, { foodType });
     return await this.favoriteFoodService.search(id, searchValue, foodType);
   }
 
