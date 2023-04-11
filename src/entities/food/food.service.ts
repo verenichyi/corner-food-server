@@ -11,6 +11,35 @@ import { validateId } from '../../utils/validateId';
 export class FoodService {
   constructor(@InjectModel(Food.name) private foodModel: Model<FoodDocument>) {}
 
+  async search(searchValue: string, foodType: string): Promise<FoodEntity[]> {
+    if (!searchValue && !foodType) {
+      return this.foodModel.find();
+    }
+
+    if (searchValue && !foodType) {
+      return this.foodModel.find({
+        $or: [
+          { title: { $regex: searchValue, $options: 'i' } },
+          { subtitle: { $regex: searchValue, $options: 'i' } },
+        ],
+      });
+    }
+
+    if (!searchValue && foodType) {
+      return this.foodModel.find({
+        tags: { $all: [foodType] },
+      });
+    }
+
+    return this.foodModel.find({
+      tags: { $all: [foodType] },
+      $or: [
+        { title: { $regex: searchValue, $options: 'i' } },
+        { subtitle: { $regex: searchValue, $options: 'i' } },
+      ],
+    });
+  }
+
   async getAll(): Promise<FoodEntity[]> {
     return this.foodModel.find();
   }
