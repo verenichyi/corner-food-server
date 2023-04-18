@@ -10,6 +10,8 @@ import { FoodTypeModule } from './entities/food-type/food-type.module';
 import { FoodModule } from './entities/food/food.module';
 import { FilesModule } from './entities/files/files.module';
 import { FavoriteFoodModule } from './entities/favorite-food/favorite-food.module';
+import { StripeModule } from './entities/stripe/stripe.module';
+import { OrderModule } from './entities/order/order.module';
 
 dotenv.config();
 
@@ -23,12 +25,16 @@ dotenv.config();
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, 'static'),
     }),
+    StripeModule.forRoot(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2022-11-15',
+    }),
     UsersModule,
     AuthModule,
     FoodTypeModule,
     FoodModule,
     FilesModule,
     FavoriteFoodModule,
+    OrderModule,
   ],
 })
 export class AppModule {}
