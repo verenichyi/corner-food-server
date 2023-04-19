@@ -6,4 +6,5 @@ export class UserEntity {
   email: string;
   password: string;
   profileImage: string;
+  stripeCustomerId: string;
 }

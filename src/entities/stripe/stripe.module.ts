@@ -1,21 +1,19 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { Stripe } from 'stripe';
-import { STRIPE_CLIENT } from './constants';
+import { forwardRef, Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { StripeController } from './stripe.controller';
+import { StripeService } from './stripe.service';
+import { AuthModule } from '../auth/auth.module';
+import { StripeClientModule } from './stripe-client/stripe-client.module';
+import { Order, OrderSchema } from '../order/order.schema';
 
-@Module({})
-export class StripeModule {
-  static forRoot(apiKey: string, config: Stripe.StripeConfig): DynamicModule {
-    const stripe = new Stripe(apiKey, config);
-    const stripeProvider: Provider = {
-      provide: STRIPE_CLIENT,
-      useValue: stripe,
-    };
-
-    return {
-      module: StripeModule,
-      providers: [stripeProvider],
-      exports: [stripeProvider],
-      global: true,
-    };
-  }
-}
+@Module({
+  controllers: [StripeController],
+  providers: [StripeService],
+  imports: [
+    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    forwardRef(() => AuthModule),
+    forwardRef(() => StripeClientModule),
+  ],
+  exports: [StripeService],
+})
+export class StripeModule {}

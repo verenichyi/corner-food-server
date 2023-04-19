@@ -5,4 +5,5 @@ export class GoogleUserEntity {
   username: string;
   email: string;
   profileImage: string;
+  stripeCustomerId: string;
 }

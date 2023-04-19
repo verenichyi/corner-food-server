@@ -38,6 +38,14 @@ export class CreateOrderDto {
   @IsString()
   userId: string;
 
+  @IsNotEmpty()
+  @IsString()
+  stripeCustomerId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  paymentMethodId: string;
+
   @IsArray()
   @ArrayNotEmpty()
   @Type(() => OrderItem)
@@ -49,8 +57,4 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsNumber()
   totalPrice: number;
-
-  @IsNotEmpty()
-  @IsString()
-  paymentMethod: string;
 }
