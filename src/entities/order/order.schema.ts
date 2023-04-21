@@ -2,8 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { User } from '../users/user.schema';
 import { Food } from '../food/food.schema';
+import { getRandomInt } from '../../utils/getRandomInt';
 
-@Schema({ versionKey: false, timestamps: true })
+@Schema({ versionKey: false })
 export class Order {
   @Prop({ type: Types.ObjectId, ref: User.name, required: false })
   user: string;
@@ -29,36 +30,14 @@ export class Order {
   @Prop({ type: String, required: true })
   paymentMethod: string;
 
-  @Prop({
-    type: {
-      id: { type: String },
-      status: { type: String },
-      update_time: { type: String },
-      email_address: { type: String },
-    },
-  })
-  paymentResult: Object;
-
-  @Prop({ type: Number, required: true, default: 0.0 })
-  taxPrice: number;
-
-  @Prop({ type: Number, required: true, default: 0.0 })
-  shippingPrice: number;
-
-  @Prop({ type: Number, required: true, default: 0.0 })
+  @Prop({ type: Number, required: true })
   totalPrice: number;
 
-  @Prop({ type: Boolean, required: true, default: false })
-  isPaid: boolean;
+  @Prop({ type: Date, default: new Date() })
+  orderCreatedAt: Date;
 
-  @Prop({ type: Date })
-  paidAt: Date;
-
-  @Prop({ type: Boolean, required: true, default: false })
-  isDelivered: boolean;
-
-  @Prop({ type: Date })
-  deliveredAt: Date;
+  @Prop({ type: Number, default: getRandomInt(5, 10) })
+  deliveryTime: number;
 }
 
 export type OrderDocument = HydratedDocument<Order>;

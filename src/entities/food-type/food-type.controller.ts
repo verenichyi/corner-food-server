@@ -9,7 +9,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { FoodTypeService } from './food-type.service';
-import { FoodTypeEntity } from './food-type.entity';
+import { FoodTypeEntity } from './entities/food-type.entity';
 import { CreateFoodTypeDto } from './dto/create-food-type.dto';
 
 @Controller('food-type')

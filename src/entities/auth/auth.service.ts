@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { UserEntity } from '../users/user.entity';
+import { UserEntity } from '../users/entities/user.entity';
 import { GoogleUserDto } from './dto/google-user.dto';
 
 @Injectable()

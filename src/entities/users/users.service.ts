@@ -7,11 +7,11 @@ import { checkUserForDatabaseMatches } from 'src/entities/users/utils/validation
 import { validateId } from '../../utils/validateId';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './user.entity';
+import { UserEntity } from './entities/user.entity';
 import { User, UserDocument } from './user.schema';
 import { RegisterUserDto } from '../auth/dto/register-user.dto';
 import { GoogleUserDto } from '../auth/dto/google-user.dto';
-import { GoogleUserEntity } from './google-user.entity';
+import { GoogleUserEntity } from './entities/google-user.entity';
 import { StripeService } from '../stripe/stripe.service';
 
 config();

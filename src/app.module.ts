@@ -13,6 +13,7 @@ import { FavoriteFoodModule } from './entities/favorite-food/favorite-food.modul
 import { StripeClientModule } from './entities/stripe/stripe-client/stripe-client.module';
 import { OrderModule } from './entities/order/order.module';
 import { StripeModule } from './entities/stripe/stripe.module';
+import { NotificationsModule } from './entities/notifications/notifications.module';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ dotenv.config();
     FilesModule,
     FavoriteFoodModule,
     OrderModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

@@ -5,6 +5,7 @@ import { Stripe } from 'stripe';
 import { Order, OrderDocument } from './order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { StripeService } from '../stripe/stripe.service';
+import * as moment from 'moment';
 
 @Injectable()
 export class OrderService {
@@ -37,6 +38,30 @@ export class OrderService {
       totalPrice,
       paymentMethodId,
       stripeCustomerId,
+    );
+  }
+
+  async findUserActiveOrders(userId: string) {
+    const orders = await this.orderModel.find({ user: userId });
+
+    return orders.filter(
+      (order) =>
+      {
+        return moment(order.orderCreatedAt)
+          .add(order.deliveryTime, 'm')
+          .diff(moment()) > 0
+      },
+    );
+  }
+
+  async findUserInactiveOrders(userId: string) {
+    const orders = await this.orderModel.find({ user: userId });
+
+    return orders.filter(
+      (order) =>
+        moment(order.orderCreatedAt)
+          .add(order.deliveryTime, 'm')
+          .diff(moment()) < 0,
     );
   }
 }
