@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FoodService } from './food.service';
-import { FoodEntity } from './food.entity';
+import { FoodEntity } from './entities/food.entity';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';

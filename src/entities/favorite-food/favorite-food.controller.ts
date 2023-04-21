@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { FavoriteFoodService } from './favorite-food.service';
-import { FavoriteFoodEntity } from './favorite-food.entity';
+import { FavoriteFoodEntity } from './entities/favorite-food.entity';
 import { CreateFavoriteFoodDto } from './dto/create-favorite-food.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 

@@ -14,6 +14,9 @@ export class User {
 
   @Prop({ type: String})
   profileImage: string;
+
+  @Prop({ type: String})
+  stripeCustomerId: string;
 }
 
 export type UserDocument = HydratedDocument<User>;

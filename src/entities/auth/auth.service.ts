@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { UserEntity } from '../users/user.entity';
+import { UserEntity } from '../users/entities/user.entity';
 import { GoogleUserDto } from './dto/google-user.dto';
 
 @Injectable()
@@ -17,28 +17,28 @@ export class AuthService {
   async authGoogle(userDto: GoogleUserDto) {
     const user = await this.usersService.getUserByEmail(userDto.email);
     if (user) {
-      const { _id, email, username, profileImage } = user;
-      const payload = { _id, email, username, profileImage };
+      const { _id, email, username, profileImage, stripeCustomerId } = user;
+      const payload = { _id, email, username, profileImage, stripeCustomerId };
       return this.generateToken(payload);
     }
 
     const newUser = await this.usersService.createGoogleUser(userDto);
-    const { _id, email, username, profileImage } = newUser;
-    const payload = { _id, email, username, profileImage };
+    const { _id, email, username, profileImage, stripeCustomerId } = newUser;
+    const payload = { _id, email, username, profileImage, stripeCustomerId };
     return this.generateToken(payload);
   }
 
   async login(loginDto: LoginUserDto) {
     const user = await this.validateUser(loginDto);
-    const { _id, email, username } = user;
-    const payload = { _id, email, username };
+    const { _id, email, username, stripeCustomerId } = user;
+    const payload = { _id, email, username, stripeCustomerId };
     return this.generateToken(payload);
   }
 
   async registration(registerDto: RegisterUserDto) {
     const user = await this.usersService.createUser(registerDto);
-    const { _id, email, username } = user;
-    const payload = { _id, email, username };
+    const { _id, email, username, stripeCustomerId } = user;
+    const payload = { _id, email, username, stripeCustomerId };
     return this.generateToken(payload);
   }
 

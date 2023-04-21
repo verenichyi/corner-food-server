@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateFoodTypeDto } from './dto/create-food-type.dto';
-import { FoodTypeEntity } from './food-type.entity';
+import { FoodTypeEntity } from './entities/food-type.entity';
 import { FoodType, FoodTypeDocument } from './food-type.schema';
 import { validateId } from '../../utils/validateId';
 

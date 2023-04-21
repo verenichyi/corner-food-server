@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateFavoriteFoodDto } from './dto/create-favorite-food.dto';
-import { FavoriteFoodEntity } from './favorite-food.entity';
+import { FavoriteFoodEntity } from './entities/favorite-food.entity';
 import { FavoriteFood, FavoriteFoodDocument } from './favorite-food.schema';
 import { validateId } from '../../utils/validateId';
 import { UsersService } from '../users/users.service';

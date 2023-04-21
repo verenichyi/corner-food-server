@@ -7,17 +7,21 @@ import { checkUserForDatabaseMatches } from 'src/entities/users/utils/validation
 import { validateId } from '../../utils/validateId';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserEntity } from './user.entity';
+import { UserEntity } from './entities/user.entity';
 import { User, UserDocument } from './user.schema';
 import { RegisterUserDto } from '../auth/dto/register-user.dto';
 import { GoogleUserDto } from '../auth/dto/google-user.dto';
-import { GoogleUserEntity } from './google-user.entity';
+import { GoogleUserEntity } from './entities/google-user.entity';
+import { StripeService } from '../stripe/stripe.service';
 
 config();
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private stripeService: StripeService,
+  ) {}
 
   async getAll(): Promise<UserEntity[]> {
     return this.userModel.find().lean();
@@ -37,7 +41,15 @@ export class UsersService {
   async createGoogleUser(body: GoogleUserDto): Promise<GoogleUserEntity> {
     await checkUserForDatabaseMatches(body.email, this.userModel);
 
-    const newUser = await new this.userModel(body);
+    const stripeCustomer = await this.stripeService.createCustomer(
+      body.username,
+      body.email,
+    );
+
+    const newUser = await new this.userModel({
+      ...body,
+      stripeCustomerId: stripeCustomer.id,
+    });
     return newUser.save();
   }
 
@@ -49,9 +61,15 @@ export class UsersService {
       parseInt(process.env.CRYPT_SALT),
     );
 
+    const stripeCustomer = await this.stripeService.createCustomer(
+      body.username,
+      body.email,
+    );
+
     const newUser = await new this.userModel({
       ...body,
       password: hashedPassword,
+      stripeCustomerId: stripeCustomer.id,
     });
     return newUser.save();
   }
@@ -74,9 +92,11 @@ export class UsersService {
     validateId(id);
     await checkUserForDatabaseMatches(updateUserDto.email, this.userModel, id);
 
-    const user = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
-      new: true,
-    }).lean();
+    const user = await this.userModel
+      .findByIdAndUpdate(id, updateUserDto, {
+        new: true,
+      })
+      .lean();
     if (!user) {
       throw new NotFoundException();
     }

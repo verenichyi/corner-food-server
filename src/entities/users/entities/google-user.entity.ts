@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
 
-export class UserEntity {
+export class GoogleUserEntity {
   _id: Types.ObjectId;
   username: string;
   email: string;
-  password: string;
   profileImage: string;
+  stripeCustomerId: string;
 }
