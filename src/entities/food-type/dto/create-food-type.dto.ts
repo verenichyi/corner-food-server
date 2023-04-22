@@ -1,20 +1,22 @@
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 export type FoodTypeType =
-  | 'Fast Food'
-  | 'Vegetarian'
-  | 'Drink'
-  | 'Spicy'
-  | 'Salty'
-  | 'Sour';
+  | 'Pizza'
+  | 'Pasta'
+  | 'Salads'
+  | 'Dessert'
+  | 'Drinks'
+  | 'Sauces'
+  | 'Sides';
 
 export const validFoodTypes: FoodTypeType[] = [
-  'Fast Food',
-  'Vegetarian',
-  'Drink',
-  'Spicy',
-  'Salty',
-  'Sour',
+  'Pizza',
+  'Pasta',
+  'Salads',
+  'Dessert',
+  'Drinks',
+  'Sauces',
+  'Sides',
 ];
 
 export class CreateFoodTypeDto {
