@@ -42,20 +42,25 @@ export class OrderService {
   }
 
   async findUserActiveOrders(userId: string) {
-    const orders = await this.orderModel.find({ user: userId });
+    const orders = await this.orderModel
+      .find({ user: userId })
+      .sort({ orderCreatedAt: -1 })
+      .populate('orderItems.product');
 
-    return orders.filter(
-      (order) =>
-      {
-        return moment(order.orderCreatedAt)
+    return orders.filter((order) => {
+      return (
+        moment(order.orderCreatedAt)
           .add(order.deliveryTime, 'm')
           .diff(moment()) > 0
-      },
-    );
+      );
+    });
   }
 
   async findUserInactiveOrders(userId: string) {
-    const orders = await this.orderModel.find({ user: userId });
+    const orders = await this.orderModel
+      .find({ user: userId })
+      .sort({ orderCreatedAt: -1 })
+      .populate('orderItems.product');
 
     return orders.filter(
       (order) =>
